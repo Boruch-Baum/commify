@@ -76,6 +76,11 @@
   :type 'string
   :local t)
 
+(defcustom commify_group_prefix nil
+  "Whether to separate a prefix from a number."
+  :type 'boolean
+  :local t)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;; Decimal numbers customization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -441,7 +446,10 @@ The matched sub-parts are:
             (replace-match (commify--commas
                             num commify-bin-group-char commify-bin-group-size
                             commify-bin-digits)
-                           t t nil 3))))
+                           t t nil 3)
+            (when commify_group_prefix
+              (replace-match (concat "\\2" commify-bin-group-char)
+                             t nil nil 2)))))
        ;; an octal number
        ((and commify-oct-enable (looking-at (commify--oct-number-re)))
         (let ((num (match-string 3)))
@@ -451,17 +459,23 @@ The matched sub-parts are:
             (replace-match (commify--commas
                             num commify-oct-group-char commify-oct-group-size
                             commify-oct-digits)
-                           t t nil 3))))
+                           t t nil 3)
+            (when commify_group_prefix
+              (replace-match (concat "\\2" commify-bin-group-char)
+                             t nil nil 2)))))
        ;; a hexadecimal number
        ((and commify-hex-enable (looking-at (commify--hex-number-re)))
         (let ((num (match-string 3)))
           (if (s-contains? commify-hex-group-char num)
-              (replace-match (commify--uncommas num commify-hex-group-char)
-                             t t nil 3)
-            (replace-match (commify--commas
+            (replace-match (commify--uncommas num commify-hex-group-char)
+                           t t nil 3)
+           (replace-match (commify--commas
                             num commify-hex-group-char commify-hex-group-size
                             commify-hex-digits)
-                           t t nil 3))))
+                          t t nil 3)
+           (when commify_group_prefix
+             (replace-match (concat "\\2" commify-hex-group-char)
+                            t nil nil 2)))))
        ;; a hexadecimal hash
        ((and commify-hash-enable
              (looking-at (format "#?[%s%s]+"
