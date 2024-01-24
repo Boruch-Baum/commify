@@ -427,7 +427,9 @@ The matched sub-parts are:
     (save-excursion
       ;; find the beginning of the non-blank run of text the cursor is in or
       ;; after, limited to the beginning of the line or the beginning of buffer.
-      (skip-chars-backward (concat "^[:blank:]" commify-currency-chars commify-open-delims)
+      (skip-chars-backward (concat "^[:blank:]"
+                                   commify-currency-chars
+                                   commify-open-delims)
                            (max (point-min) (line-beginning-position)))
       (cond
        ;; a binary number
